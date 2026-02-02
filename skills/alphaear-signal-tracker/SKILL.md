@@ -1,6 +1,6 @@
 ---
 name: alphaear-signal-tracker
-description: Track investment signal evolution and update logic based on new information. Use when monitoring signals and determining if they are strengthened, weakened, or falsified.
+description: Track finance investment signal evolution and update logic based on new finance market information. Use when monitoring finance signals and determining if they are strengthened, weakened, or falsified.
 ---
 
 # AlphaEar Signal Tracker Skill

@@ -1,6 +1,6 @@
 ---
 name: alphaear-logic-visualizer
-description: Create visualize logic diagrams (e.g., Draw.io XML) to explain complex transmission chains or logic flows.
+description: Create visualize finance logic diagrams (e.g., Draw.io XML) to explain complex finance transmission chains or finance logic flows.
 ---
 
 # AlphaEar Logic Visualizer Skill

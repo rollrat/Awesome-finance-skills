@@ -1,6 +1,6 @@
 ---
 name: alphaear-reporter
-description: Plan, write, and edit professional financial reports; generate chart configurations. Use when condensing analysis into a structured output.
+description: Plan, write, and edit professional financial reports; generate finance chart configurations. Use when condensing finance analysis into a structured output.
 ---
 
 # AlphaEar Reporter Skill

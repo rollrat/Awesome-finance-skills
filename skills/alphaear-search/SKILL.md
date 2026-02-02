@@ -1,6 +1,6 @@
 ---
 name: alphaear-search
-description: Perform web searches and local context searches. Use when the user needs general info from the web (Jina/DDG/Baidu) or needs to retrieve information from a local document store (RAG).
+description: Perform finance web searches and local context searches. Use when the user needs general finance info from the web (Jina/DDG/Baidu) or needs to retrieve finance information from a local document store (RAG).
 ---
 
 # AlphaEar Search Skill

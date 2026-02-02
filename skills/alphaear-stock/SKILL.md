@@ -1,6 +1,6 @@
 ---
 name: alphaear-stock
-description: Search A-Share stock tickers and retrieve stock price history. Use when user asks about stock codes, recent price changes, or specific company stock info.
+description: Search A-Share finance stock tickers and retrieve finance stock price history. Use when user asks about finance stock codes, recent price changes, or specific company finance stock info.
 ---
 
 # AlphaEar Stock Skill

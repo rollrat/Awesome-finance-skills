@@ -1,6 +1,6 @@
 ---
 name: alphaear-news
-description: Fetch hot news, unified trends, and prediction market data. Use when the user needs real-time financial news, trend reports from multiple sources (Weibo, Zhihu, WallstreetCN, etc.), or Polymarket prediction data.
+description: Fetch hot finance news, unified trends, and prediction financial market data. Use when the user needs real-time financial news, trend reports from multiple finance sources (Weibo, Zhihu, WallstreetCN, etc.), or Polymarket finance market prediction data.
 ---
 
 # AlphaEar News Skill
