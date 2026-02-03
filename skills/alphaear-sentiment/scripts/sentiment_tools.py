@@ -2,8 +2,8 @@ import os
 from typing import Dict, List, Union, Optional
 import json
 from loguru import logger
-from agno.agent import Agent
-from .llm.factory import get_model
+# IMPORTS REMOVED: agno.agent, get_model
+# Internal LLM logic has been removed to delegate analysis to the calling Agent.
 from .database_manager import DatabaseManager
 
 # 从环境变量读取默认情绪分析模式
@@ -21,8 +21,7 @@ class SentimentTools:
     可通过环境变量 SENTIMENT_MODE 设置默认模式。
     """
     
-    def __init__(self, db: DatabaseManager, mode: Optional[str] = None, 
-                 model_provider: str = "openai", model_id: str = "gpt-4o"):
+    def __init__(self, db: DatabaseManager, mode: Optional[str] = None):
         """
         初始化情绪分析工具。
         
@@ -34,16 +33,9 @@ class SentimentTools:
         """
         self.db = db
         self.mode = mode or DEFAULT_SENTIMENT_MODE
-        self.llm_model = None
         self.bert_pipeline = None
         
-        # Initialize LLM
-        try:
-            provider = "ust" if os.getenv("UST_KEY_API") else model_provider
-            m_id = "Qwen" if provider == "ust" else model_id
-            self.llm_model = get_model(provider, m_id)
-        except Exception as e:
-            logger.warning(f"LLM initialization skipped: {e}")
+        # LLM initialization removed. Agent should perform analysis if needed.
 
         # Initialize BERT if needed
         if self.mode in ["bert", "auto"]:
@@ -91,58 +83,49 @@ class SentimentTools:
 
     def analyze_sentiment(self, text: str) -> Dict[str, Union[float, str]]:
         """
-        分析文本的情绪极性。根据初始化时的 mode 自动选择分析方法。
+        分析文本的情绪极性。仅支持 BERT 模式。
+        如需 LLM 分析，请 Agent 按照 SKILL.md 中的 Prompt 自行执行。
         
         Args:
-            text: 需要分析的文本内容，如新闻标题或摘要。
+            text: 需要分析的文本内容。
         
         Returns:
-            包含以下字段的字典:
-            - score: 情绪分值，范围 -1.0（极度负面）到 1.0（极度正面），0.0 为中性
-            - label: 情绪标签，"positive"/"negative"/"neutral"
-            - reason: 分析理由（仅 LLM 模式提供详细理由）
+            BERT 分析结果，或错误信息。
         """
-        if self.mode == "bert" and self.bert_pipeline:
+        if self.bert_pipeline:
             results = self.analyze_sentiment_bert([text])
             return results[0] if results else {"score": 0.0, "label": "error"}
-        elif self.mode == "llm" or (self.mode == "auto" and not self.bert_pipeline):
-            return self.analyze_sentiment_llm(text)
         else:
-            # auto mode with BERT available
-            results = self.analyze_sentiment_bert([text])
-            return results[0] if results else {"score": 0.0, "label": "error"}
+            return {
+                "score": 0.0, 
+                "label": "error", 
+                "reason": "BERT pipeline not initialized. For LLM analysis, please manually execute the prompt in SKILL.md."
+            }
 
-    def analyze_sentiment_llm(self, text: str) -> Dict[str, Union[float, str]]:
+    def update_single_news_sentiment(self, news_id: Union[str, int], score: float, reason: str = "") -> bool:
         """
-        使用 LLM 进行深度情绪分析，可获得详细的分析理由。
+        允许 Agent 将手动分析的结果保存到数据库。
         
         Args:
-            text: 需要分析的文本，最多处理前 1000 字符。
-        
+            news_id: 新闻 ID
+            score: -1.0 到 1.0
+            reason: 分析理由
+            
         Returns:
-            包含 score, label, reason 的字典。
+            Success bool
         """
-        if not self.llm_model:
-            return {"score": 0.0, "label": "neutral", "error": "LLM not initialized"}
-
-        analyzer = Agent(model=self.llm_model, markdown=True)
-        prompt = f"""请分析以下金融/新闻文本的情绪极性。
-        返回严格的 JSON 格式:
-        {{"score": <float: -1.0到1.0>, "label": "<positive/negative/neutral>", "reason": "<简短理由>"}}
-
-        文本: {text[:1000]}"""
-
         try:
-            response = analyzer.run(prompt)
-            content = response.content
-            if "```json" in content:
-                content = content.split("```json")[1].split("```")[0].strip()
-            elif "```" in content:
-                content = content.split("```")[1].split("```")[0].strip()
-            return json.loads(content)
+            cursor = self.db.conn.cursor()
+            cursor.execute("""
+                UPDATE daily_news 
+                SET sentiment_score = ?, meta_data = json_set(COALESCE(meta_data, '{}'), '$.sentiment_reason', ?)
+                WHERE id = ?
+            """, (score, reason, news_id))
+            self.db.conn.commit()
+            return True
         except Exception as e:
-            logger.error(f"LLM sentiment failed: {e}")
-            return {"score": 0.0, "label": "error", "reason": str(e)}
+            logger.error(f"Failed to update sentiment for {news_id}: {e}")
+            return False
 
     def analyze_sentiment_bert(self, texts: List[str]) -> List[Dict]:
         """
@@ -198,13 +181,11 @@ class SentimentTools:
         if not to_analyze:
             return 0
 
-        # 决定使用哪种方法
-        should_use_bert = use_bert if use_bert is not None else (self.bert_pipeline is not None and self.mode != "llm")
-
         updated_count = 0
         cursor = self.db.conn.cursor()
-        
-        if should_use_bert and self.bert_pipeline:
+
+        # 决定使用哪种方法
+        if self.bert_pipeline:
             logger.info(f"🚀 Using BERT for batch analysis of {len(to_analyze)} items...")
             titles = [item['title'] for item in to_analyze]
             results = self.analyze_sentiment_bert(titles)
@@ -217,15 +198,8 @@ class SentimentTools:
                 """, (analysis['score'], analysis['reason'], item['id']))
                 updated_count += 1
         else:
-            logger.info(f"🚶 Using LLM for analysis of {len(to_analyze)} items...")
-            for item in to_analyze:
-                analysis = self.analyze_sentiment_llm(item['title'])
-                cursor.execute("""
-                    UPDATE daily_news 
-                    SET sentiment_score = ?, meta_data = json_set(COALESCE(meta_data, '{}'), '$.sentiment_reason', ?)
-                    WHERE id = ?
-                """, (analysis.get('score', 0.0), analysis.get('reason', ''), item['id']))
-                updated_count += 1
+            logger.warning("BERT pipeline not available. Batch update skipped. Please use Agentic analysis for high-quality results.")
         
         self.db.conn.commit()
         return updated_count
+
