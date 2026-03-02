@@ -1,57 +1,55 @@
 ---
 name: alphaear-sentiment
-description: Analyze finance text sentiment using FinBERT or LLM. Use when the user needs to determine the sentiment (positive/negative/neutral) and score of financial text markets.
+description: FinBERT 또는 LLM을 사용하여 금융 텍스트의 감성을 분석합니다. 사용자가 금융 텍스트 시장의 감성(긍정/부정/중립)과 점수를 파악해야 할 때 사용합니다.
 ---
 
-# AlphaEar Sentiment Skill
+# AlphaEar 감성 분석 스킬
 
-## Overview
+## 개요
 
-This skill provides sentiment analysis capabilities tailored for financial texts, supporting both FinBERT (local model) and LLM-based analysis modes.
+금융 텍스트에 특화된 감성 분석 기능을 제공하며, FinBERT(로컬 모델)와 LLM 기반 분석 모드를 모두 지원합니다.
 
-## Capabilities
+## 기능
 
-## Capabilities
+### 1. 감성 분석 (FinBERT / 로컬)
 
-### 1. Analyze Sentiment (FinBERT / Local)
+`scripts/sentiment_tools.py`를 사용하여 FinBERT 기반 고속 로컬 감성 분석을 수행합니다.
 
-Use `scripts/sentiment_tools.py` for high-speed, local sentiment analysis using FinBERT.
+**주요 메서드:**
 
-**Key Methods:**
+-   `analyze_sentiment(text)`: 로컬 FinBERT 모델을 사용하여 감성 점수와 레이블을 반환합니다.
+    -   **반환값**: `{'score': float, 'label': str, 'reason': str}`.
+    -   **점수 범위**: -1.0(부정) ~ 1.0(긍정).
+-   `batch_update_news_sentiment(source, limit)`: 데이터베이스의 미분석 뉴스를 일괄 처리합니다 (FinBERT 전용).
 
--   `analyze_sentiment(text)`: Get sentiment score and label using localized FinBERT model.
-    -   **Returns**: `{'score': float, 'label': str, 'reason': str}`.
-    -   **Score Range**: -1.0 (Negative) to 1.0 (Positive).
--   `batch_update_news_sentiment(source, limit)`: Batch process unanalyzed news in the database (FinBERT only).
+### 2. 감성 분석 (LLM / 에이전틱)
 
-### 2. Analyze Sentiment (LLM / Agentic)
+더 높은 정확도나 추론 능력이 필요한 경우, **에이전트(당신)**가 아래 프롬프트를 사용하여 LLM을 직접 호출해 분석하고, 필요 시 데이터베이스를 업데이트합니다.
 
-For higher accuracy or reasoning capabilities, **YOU (the Agent)** should perform the analysis using the Prompt below, calling the LLM directly, and then update the database if necessary.
+#### 감성 분석 프롬프트
 
-#### Sentiment Analysis Prompt
-
-Use this prompt to analyze financial texts if the local tool is insufficient or if reasoning is required.
+로컬 도구가 부족하거나 추론이 필요한 경우 이 프롬프트를 사용합니다.
 
 ```markdown
-请分析以下金融/新闻文本的情绪极性。
-返回严格的 JSON 格式:
-{"score": <float: -1.0到1.0>, "label": "<positive/negative/neutral>", "reason": "<简短理由>"}
+다음 금융/뉴스 텍스트의 감성 극성을 분석하세요.
+엄격한 JSON 형식으로 반환하세요:
+{"score": <float: -1.0~1.0>, "label": "<positive/negative/neutral>", "reason": "<간단한 이유>"}
 
-文本: {text}
+텍스트: {text}
 ```
 
-**Scoring Guide:**
-- **Positive (0.1 to 1.0)**: Optimistic news, profit growth, policy support, etc.
-- **Negative (-1.0 to -0.1)**: Losses, sanctions, price drops, pessimism.
-- **Neutral (-0.1 to 0.1)**: Factual reporting, sideways movement, ambiguous impact.
+**점수 기준:**
+- **긍정 (0.1 ~ 1.0)**: 낙관적 뉴스, 실적 성장, 정책 지원 등.
+- **부정 (-1.0 ~ -0.1)**: 손실, 제재, 주가 하락, 비관론.
+- **중립 (-0.1 ~ 0.1)**: 사실 보도, 횡보 움직임, 영향 불분명.
 
-#### Helper Methods
-- `update_single_news_sentiment(id, score, reason)`: Use this to save your manual analysis to the database.
+#### 헬퍼 메서드
+- `update_single_news_sentiment(id, score, reason)`: 수동 분석 결과를 데이터베이스에 저장합니다.
 
-## Dependencies
+## 의존성
 
--   `torch` (for FinBERT)
--   `transformers` (for FinBERT)
--   `sqlite3` (built-in)
+-   `torch` (FinBERT용)
+-   `transformers` (FinBERT용)
+-   `sqlite3` (내장)
 
-Ensure `DatabaseManager` is initialized correctly.
+`DatabaseManager`가 올바르게 초기화되어 있어야 합니다.

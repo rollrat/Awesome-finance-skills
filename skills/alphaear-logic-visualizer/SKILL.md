@@ -1,31 +1,28 @@
 ---
 name: alphaear-logic-visualizer
-description: Create visualize finance logic diagrams (e.g., Draw.io XML) to explain complex finance transmission chains or finance logic flows.
+description: 복잡한 금융 전달 체계나 금융 논리 흐름을 설명하기 위한 금융 논리 다이어그램(예: Draw.io XML)을 생성하고 시각화합니다.
 ---
 
-# AlphaEar Logic Visualizer Skill
+# AlphaEar 논리 시각화 스킬
 
-## Overview
+## 개요
 
-This skill specializes in creating visual representations of logic flows, specifically generating Draw.io XML compatible diagrams. It is useful for visualizing investment theses or signal transmission chains.
+논리 흐름의 시각적 표현을 전문으로 생성하며, 특히 Draw.io XML 호환 다이어그램을 출력합니다. 투자 논거나 시그널 전달 체계를 시각화하는 데 유용합니다.
 
-## Capabilities
+## 기능
 
-### 1. Generate Draw.io Diagrams
+### 1. Draw.io 다이어그램 생성 (에이전틱 워크플로우)
 
-### 1. Generate Draw.io Diagrams (Agentic Workflow)
+**에이전트(당신)**가 시각화 담당자입니다. `references/PROMPTS.md`의 프롬프트를 사용하여 XML을 생성합니다.
 
-**YOU (the Agent)** are the Visualizer. Use the prompts in `references/PROMPTS.md` to generate the XML.
+**워크플로우:**
+1.  **XML 생성**: `references/PROMPTS.md`의 **Draw.io XML 생성 프롬프트**를 사용하여 논리 체계를 XML로 변환합니다.
+2.  **저장/렌더링**: `scripts/visualizer.py`의 `render_drawio_to_html(xml_content, filename)` 메서드를 사용하여 XML을 사용자가 볼 수 있는 HTML 파일로 저장합니다.
 
-**Workflow:**
-1.  **Generate XML**: Use the **Draw.io XML Generation Prompt** from `references/PROMPTS.md` to convert your logical chain into XML.
-2.  **Save/Render**: Use `scripts/visualizer.py` method `render_drawio_to_html(xml_content, filename)` to save the XML into a viewable HTML file for the user.
+**사용 예시 (개념적):**
+- **에이전트 작업**: "전달 체계에 대한 Draw.io XML을 생성하겠습니다..."
+- **도구 호출**: `visualizer.render_drawio_to_html(xml_content="<mxGraphModel>...", filename="chain_visual.html")`
 
-**Example Usage (Conceptual):**
-- **Agent Action**: "I will now generate a Draw.io XML for the transmission chain..."
-- **Tool Call**: `visualizer.render_drawio_to_html(xml_content="<mxGraphModel>...", filename="chain_visual.html")`
+## 의존성
 
-
-## Dependencies
-
--   None (Standard Library for string manipulation).
+-   없음 (문자열 조작을 위한 표준 라이브러리만 사용).

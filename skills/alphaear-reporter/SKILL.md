@@ -1,32 +1,29 @@
 ---
 name: alphaear-reporter
-description: Plan, write, and edit professional financial reports; generate finance chart configurations. Use when condensing finance analysis into a structured output.
+description: 전문 금융 리포트를 기획, 작성, 편집하고, 금융 차트 구성을 생성합니다. 금융 분석을 구조화된 형태로 정리해야 할 때 사용합니다.
 ---
 
-# AlphaEar Reporter Skill
+# AlphaEar 리포터 스킬
 
-## Overview
+## 개요
 
-This skill provides a structured workflow for generating professional financial reports. It includes planning, writing, editing, and creating visual aids (charts).
+전문 금융 리포트를 생성하기 위한 구조화된 워크플로우를 제공합니다. 기획, 작성, 편집, 시각 자료(차트) 생성을 포함합니다.
 
-## Capabilities
+## 기능
 
-## Capabilities
+### 1. 구조화된 리포트 생성 (에이전틱 워크플로우)
 
-### 1. Generate Structured Reports (Agentic Workflow)
+**에이전트(당신)**가 리포트 생성 담당자입니다. `references/PROMPTS.md`의 프롬프트를 사용하여 단계적으로 리포트를 작성합니다.
 
-**YOU (the Agent)** are the Report Generator. Use the prompts in `references/PROMPTS.md` to progressively build the report.
+**워크플로우:**
+1.  **시그널 클러스터링**: 입력 시그널을 읽고 **시그널 클러스터링 프롬프트**를 사용하여 그룹화합니다.
+2.  **섹션 작성**: 각 클러스터에 대해 **섹션 작성 프롬프트**를 사용하여 분석 내용을 작성합니다.
+3.  **최종 조립**: **최종 조립 프롬프트**를 사용하여 리포트를 완성합니다.
 
-**Workflow:**
-1.  **Cluster Signals**: Read input signals and use the **Cluster Signals Prompt** to group them.
-2.  **Write Sections**: For each cluster, use the **Write Section Prompt** to generate analysis.
-3.  **Assemble**: Use the **Final Assembly Prompt** to compile the report.
+### 2. 시각화 도구
 
-### 2. Visualization Tools
+필요 시 `scripts/visualizer.py`를 사용하여 차트 구성을 수동으로 생성할 수 있습니다. 단, 작성 프롬프트가 보통 `json-chart` 블록을 통해 이를 자동으로 처리합니다.
 
-Use `scripts/visualizer.py` to generate chart configurations if needed manually, though the Writer Prompt usually handles this via `json-chart` blocks.
+## 의존성
 
-## Dependencies
-
--   `sqlite3` (built-in)
-
+-   `sqlite3` (내장)

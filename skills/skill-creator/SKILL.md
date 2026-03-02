@@ -1,371 +1,158 @@
 ---
 name: skill-creator
-description: Create or update AgentSkills. Use when designing, structuring, or packaging skills with scripts, references, and assets.
+description: AgentSkill을 생성하거나 업데이트합니다. 스크립트, 참조 자료, 에셋을 포함한 스킬을 설계, 구조화, 패키징할 때 사용합니다.
 ---
 
-# Skill Creator
+# 스킬 크리에이터
 
-This skill provides guidance for creating effective skills.
+이 스킬은 효과적인 스킬을 만드는 방법에 대한 가이드를 제공합니다.
 
-## About Skills
+## 스킬이란
 
-Skills are modular, self-contained packages that extend Codex's capabilities by providing
-specialized knowledge, workflows, and tools. Think of them as "onboarding guides" for specific
-domains or tasks—they transform Codex from a general-purpose agent into a specialized agent
-equipped with procedural knowledge that no model can fully possess.
+스킬은 전문 지식, 워크플로우, 도구를 제공하여 Codex의 기능을 확장하는 모듈형 독립 패키지입니다. 특정 도메인이나 작업에 대한 "온보딩 가이드"로 생각하세요. 스킬은 Codex를 범용 에이전트에서 어떤 모델도 완전히 갖출 수 없는 절차적 지식을 갖춘 전문화된 에이전트로 변환합니다.
 
-### What Skills Provide
+### 스킬이 제공하는 것
 
-1. Specialized workflows - Multi-step procedures for specific domains
-2. Tool integrations - Instructions for working with specific file formats or APIs
-3. Domain expertise - Company-specific knowledge, schemas, business logic
-4. Bundled resources - Scripts, references, and assets for complex and repetitive tasks
+1. 전문 워크플로우 - 특정 도메인을 위한 다단계 절차
+2. 도구 통합 - 특정 파일 형식이나 API 사용 지침
+3. 도메인 전문성 - 회사별 지식, 스키마, 비즈니스 로직
+4. 번들 리소스 - 복잡하고 반복적인 작업을 위한 스크립트, 참조 자료, 에셋
 
-## Core Principles
+## 핵심 원칙
 
-### Concise is Key
+### 간결함이 핵심
 
-The context window is a public good. Skills share the context window with everything else Codex needs: system prompt, conversation history, other Skills' metadata, and the actual user request.
+컨텍스트 창은 공공재입니다. 스킬은 Codex가 필요로 하는 시스템 프롬프트, 대화 히스토리, 다른 스킬의 메타데이터, 실제 사용자 요청과 컨텍스트 창을 공유합니다.
 
-**Default assumption: Codex is already very smart.** Only add context Codex doesn't already have. Challenge each piece of information: "Does Codex really need this explanation?" and "Does this paragraph justify its token cost?"
+**기본 가정: Codex는 이미 매우 똑똑합니다.** Codex가 이미 가지고 있지 않은 컨텍스트만 추가하세요. 각 정보에 "Codex가 이 설명을 정말 필요로 하는가?" 및 "이 문단이 토큰 비용을 정당화하는가?"라고 질문하세요.
 
-Prefer concise examples over verbose explanations.
+장황한 설명보다는 간결한 예시를 선호하세요.
 
-### Set Appropriate Degrees of Freedom
+### 적절한 자유도 설정
 
-Match the level of specificity to the task's fragility and variability:
+작업의 취약성과 가변성에 맞게 구체성 수준을 조정하세요:
 
-**High freedom (text-based instructions)**: Use when multiple approaches are valid, decisions depend on context, or heuristics guide the approach.
+**높은 자유도 (텍스트 기반 지침)**: 여러 접근 방식이 유효하거나, 결정이 컨텍스트에 의존하거나, 휴리스틱이 접근 방식을 안내할 때 사용합니다.
 
-**Medium freedom (pseudocode or scripts with parameters)**: Use when a preferred pattern exists, some variation is acceptable, or configuration affects behavior.
+**중간 자유도 (의사코드 또는 매개변수가 있는 스크립트)**: 선호하는 패턴이 있거나, 일부 변형이 허용되거나, 설정이 동작에 영향을 줄 때 사용합니다.
 
-**Low freedom (specific scripts, few parameters)**: Use when operations are fragile and error-prone, consistency is critical, or a specific sequence must be followed.
+**낮은 자유도 (특정 스크립트, 적은 매개변수)**: 작업이 취약하고 오류가 발생하기 쉽거나, 일관성이 중요하거나, 특정 순서를 따라야 할 때 사용합니다.
 
-Think of Codex as exploring a path: a narrow bridge with cliffs needs specific guardrails (low freedom), while an open field allows many routes (high freedom).
+### 스킬의 구조
 
-### Anatomy of a Skill
-
-Every skill consists of a required SKILL.md file and optional bundled resources:
+모든 스킬은 필수 SKILL.md 파일과 선택적 번들 리소스로 구성됩니다:
 
 ```
 skill-name/
-├── SKILL.md (required)
-│   ├── YAML frontmatter metadata (required)
-│   │   ├── name: (required)
-│   │   └── description: (required)
-│   └── Markdown instructions (required)
-└── Bundled Resources (optional)
-    ├── scripts/          - Executable code (Python/Bash/etc.)
-    ├── references/       - Documentation intended to be loaded into context as needed
-    └── assets/           - Files used in output (templates, icons, fonts, etc.)
+├── SKILL.md (필수)
+│   ├── YAML 프론트매터 메타데이터 (필수)
+│   │   ├── name: (필수)
+│   │   └── description: (필수)
+│   └── 마크다운 지침 (필수)
+└── 번들 리소스 (선택)
+    ├── scripts/          - 실행 가능한 코드 (Python/Bash/등)
+    ├── references/       - 필요 시 컨텍스트에 로드될 문서
+    └── assets/           - 출력에 사용되는 파일 (템플릿, 아이콘, 폰트 등)
 ```
 
-#### SKILL.md (required)
+#### SKILL.md (필수)
 
-Every SKILL.md consists of:
+모든 SKILL.md는 다음으로 구성됩니다:
 
-- **Frontmatter** (YAML): Contains `name` and `description` fields. These are the only fields that Codex reads to determine when the skill gets used, thus it is very important to be clear and comprehensive in describing what the skill is, and when it should be used.
-- **Body** (Markdown): Instructions and guidance for using the skill. Only loaded AFTER the skill triggers (if at all).
+- **프론트매터** (YAML): `name`과 `description` 필드를 포함합니다. 이 두 필드만 Codex가 스킬 사용 시점을 결정하는 데 읽으므로, 스킬이 무엇인지와 언제 사용해야 하는지를 명확하고 포괄적으로 기술하는 것이 매우 중요합니다.
+- **본문** (마크다운): 스킬 사용 지침. 스킬이 트리거된 후에만 로드됩니다.
 
-#### Bundled Resources (optional)
+#### 번들 리소스 (선택)
 
-##### Scripts (`scripts/`)
+##### 스크립트 (`scripts/`)
 
-Executable code (Python/Bash/etc.) for tasks that require deterministic reliability or are repeatedly rewritten.
+결정론적 신뢰성이 필요하거나 반복적으로 재작성되는 작업을 위한 실행 가능한 코드.
 
-- **When to include**: When the same code is being rewritten repeatedly or deterministic reliability is needed
-- **Example**: `scripts/rotate_pdf.py` for PDF rotation tasks
-- **Benefits**: Token efficient, deterministic, may be executed without loading into context
-- **Note**: Scripts may still need to be read by Codex for patching or environment-specific adjustments
+- **포함 시기**: 동일한 코드가 반복적으로 재작성되거나 결정론적 신뢰성이 필요할 때
+- **예시**: PDF 회전 작업을 위한 `scripts/rotate_pdf.py`
+- **장점**: 토큰 효율적, 결정론적, 컨텍스트에 로드하지 않고도 실행 가능
 
-##### References (`references/`)
+##### 참조 자료 (`references/`)
 
-Documentation and reference material intended to be loaded as needed into context to inform Codex's process and thinking.
+Codex의 프로세스와 사고를 안내하기 위해 필요 시 컨텍스트에 로드되는 문서 및 참조 자료.
 
-- **When to include**: For documentation that Codex should reference while working
-- **Examples**: `references/finance.md` for financial schemas, `references/mnda.md` for company NDA template, `references/policies.md` for company policies, `references/api_docs.md` for API specifications
-- **Use cases**: Database schemas, API documentation, domain knowledge, company policies, detailed workflow guides
-- **Benefits**: Keeps SKILL.md lean, loaded only when Codex determines it's needed
-- **Best practice**: If files are large (>10k words), include grep search patterns in SKILL.md
-- **Avoid duplication**: Information should live in either SKILL.md or references files, not both. Prefer references files for detailed information unless it's truly core to the skill—this keeps SKILL.md lean while making information discoverable without hogging the context window. Keep only essential procedural instructions and workflow guidance in SKILL.md; move detailed reference material, schemas, and examples to references files.
+- **포함 시기**: Codex가 작업 중 참조해야 하는 문서
+- **예시**: 금융 스키마를 위한 `references/finance.md`, API 명세를 위한 `references/api_docs.md`
+- **모범 사례**: 파일이 크면 (10k 단어 이상), SKILL.md에 grep 검색 패턴을 포함하세요
 
-##### Assets (`assets/`)
+##### 에셋 (`assets/`)
 
-Files not intended to be loaded into context, but rather used within the output Codex produces.
+컨텍스트에 로드되지 않고 Codex가 생성하는 출력에 사용되는 파일.
 
-- **When to include**: When the skill needs files that will be used in the final output
-- **Examples**: `assets/logo.png` for brand assets, `assets/slides.pptx` for PowerPoint templates, `assets/frontend-template/` for HTML/React boilerplate, `assets/font.ttf` for typography
-- **Use cases**: Templates, images, icons, boilerplate code, fonts, sample documents that get copied or modified
-- **Benefits**: Separates output resources from documentation, enables Codex to use files without loading them into context
+- **포함 시기**: 스킬이 최종 출력에 사용될 파일이 필요할 때
+- **예시**: 브랜드 에셋을 위한 `assets/logo.png`, HTML/React 보일러플레이트를 위한 `assets/frontend-template/`
 
-#### What to Not Include in a Skill
+## 스킬 생성 과정
 
-A skill should only contain essential files that directly support its functionality. Do NOT create extraneous documentation or auxiliary files, including:
+스킬 생성은 다음 단계를 포함합니다:
 
-- README.md
-- INSTALLATION_GUIDE.md
-- QUICK_REFERENCE.md
-- CHANGELOG.md
-- etc.
+1. 구체적인 예시로 스킬 이해하기
+2. 재사용 가능한 스킬 내용 계획하기 (스크립트, 참조 자료, 에셋)
+3. 스킬 초기화 (`init_skill.py` 실행)
+4. 스킬 편집 (리소스 구현 및 SKILL.md 작성)
+5. 스킬 패키징 (`package_skill.py` 실행)
+6. 실제 사용을 바탕으로 반복 개선
 
-The skill should only contain the information needed for an AI agent to do the job at hand. It should not contain auxiliary context about the process that went into creating it, setup and testing procedures, user-facing documentation, etc. Creating additional documentation files just adds clutter and confusion.
+### 스킬 명명 규칙
 
-### Progressive Disclosure Design Principle
+- 소문자, 숫자, 하이픈만 사용하며, 사용자 제공 제목을 하이픈-케이스로 정규화합니다 (예: "Plan Mode" -> `plan-mode`).
+- 64자 미만으로 이름을 생성합니다 (문자, 숫자, 하이픈).
+- 동작을 설명하는 짧은 동사 중심 구문을 선호합니다.
+- 명확성이나 트리거링 향상을 위해 도구별 네임스페이스를 사용합니다 (예: `gh-address-comments`).
 
-Skills use a three-level loading system to manage context efficiently:
+### 1단계: 구체적인 예시로 스킬 이해하기
 
-1. **Metadata (name + description)** - Always in context (~100 words)
-2. **SKILL.md body** - When skill triggers (<5k words)
-3. **Bundled resources** - As needed by Codex (Unlimited because scripts can be executed without reading into context window)
+스킬의 사용 패턴이 이미 명확히 이해된 경우에만 이 단계를 건너뜁니다.
 
-#### Progressive Disclosure Patterns
+효과적인 스킬을 만들려면 스킬이 어떻게 사용될지에 대한 구체적인 예시를 명확히 이해해야 합니다. 이 이해는 직접적인 사용자 예시나 사용자 피드백으로 검증된 생성된 예시에서 올 수 있습니다.
 
-Keep SKILL.md body to the essentials and under 500 lines to minimize context bloat. Split content into separate files when approaching this limit. When splitting out content into other files, it is very important to reference them from SKILL.md and describe clearly when to read them, to ensure the reader of the skill knows they exist and when to use them.
+### 2단계: 재사용 가능한 스킬 내용 계획하기
 
-**Key principle:** When a skill supports multiple variations, frameworks, or options, keep only the core workflow and selection guidance in SKILL.md. Move variant-specific details (patterns, examples, configuration) into separate reference files.
+구체적인 예시를 효과적인 스킬로 변환하려면, 각 예시를 분석합니다:
 
-**Pattern 1: High-level guide with references**
+1. 처음부터 예시를 실행하는 방법 고려하기
+2. 이러한 워크플로우를 반복적으로 실행할 때 도움이 될 스크립트, 참조 자료, 에셋 파악하기
 
-```markdown
-# PDF Processing
+### 3단계: 스킬 초기화
 
-## Quick start
-
-Extract text with pdfplumber:
-[code example]
-
-## Advanced features
-
-- **Form filling**: See [FORMS.md](FORMS.md) for complete guide
-- **API reference**: See [REFERENCE.md](REFERENCE.md) for all methods
-- **Examples**: See [EXAMPLES.md](EXAMPLES.md) for common patterns
-```
-
-Codex loads FORMS.md, REFERENCE.md, or EXAMPLES.md only when needed.
-
-**Pattern 2: Domain-specific organization**
-
-For Skills with multiple domains, organize content by domain to avoid loading irrelevant context:
-
-```
-bigquery-skill/
-├── SKILL.md (overview and navigation)
-└── reference/
-    ├── finance.md (revenue, billing metrics)
-    ├── sales.md (opportunities, pipeline)
-    ├── product.md (API usage, features)
-    └── marketing.md (campaigns, attribution)
-```
-
-When a user asks about sales metrics, Codex only reads sales.md.
-
-Similarly, for skills supporting multiple frameworks or variants, organize by variant:
-
-```
-cloud-deploy/
-├── SKILL.md (workflow + provider selection)
-└── references/
-    ├── aws.md (AWS deployment patterns)
-    ├── gcp.md (GCP deployment patterns)
-    └── azure.md (Azure deployment patterns)
-```
-
-When the user chooses AWS, Codex only reads aws.md.
-
-**Pattern 3: Conditional details**
-
-Show basic content, link to advanced content:
-
-```markdown
-# DOCX Processing
-
-## Creating documents
-
-Use docx-js for new documents. See [DOCX-JS.md](DOCX-JS.md).
-
-## Editing documents
-
-For simple edits, modify the XML directly.
-
-**For tracked changes**: See [REDLINING.md](REDLINING.md)
-**For OOXML details**: See [OOXML.md](OOXML.md)
-```
-
-Codex reads REDLINING.md or OOXML.md only when the user needs those features.
-
-**Important guidelines:**
-
-- **Avoid deeply nested references** - Keep references one level deep from SKILL.md. All reference files should link directly from SKILL.md.
-- **Structure longer reference files** - For files longer than 100 lines, include a table of contents at the top so Codex can see the full scope when previewing.
-
-## Skill Creation Process
-
-Skill creation involves these steps:
-
-1. Understand the skill with concrete examples
-2. Plan reusable skill contents (scripts, references, assets)
-3. Initialize the skill (run init_skill.py)
-4. Edit the skill (implement resources and write SKILL.md)
-5. Package the skill (run package_skill.py)
-6. Iterate based on real usage
-
-Follow these steps in order, skipping only if there is a clear reason why they are not applicable.
-
-### Skill Naming
-
-- Use lowercase letters, digits, and hyphens only; normalize user-provided titles to hyphen-case (e.g., "Plan Mode" -> `plan-mode`).
-- When generating names, generate a name under 64 characters (letters, digits, hyphens).
-- Prefer short, verb-led phrases that describe the action.
-- Namespace by tool when it improves clarity or triggering (e.g., `gh-address-comments`, `linear-address-issue`).
-- Name the skill folder exactly after the skill name.
-
-### Step 1: Understanding the Skill with Concrete Examples
-
-Skip this step only when the skill's usage patterns are already clearly understood. It remains valuable even when working with an existing skill.
-
-To create an effective skill, clearly understand concrete examples of how the skill will be used. This understanding can come from either direct user examples or generated examples that are validated with user feedback.
-
-For example, when building an image-editor skill, relevant questions include:
-
-- "What functionality should the image-editor skill support? Editing, rotating, anything else?"
-- "Can you give some examples of how this skill would be used?"
-- "I can imagine users asking for things like 'Remove the red-eye from this image' or 'Rotate this image'. Are there other ways you imagine this skill being used?"
-- "What would a user say that should trigger this skill?"
-
-To avoid overwhelming users, avoid asking too many questions in a single message. Start with the most important questions and follow up as needed for better effectiveness.
-
-Conclude this step when there is a clear sense of the functionality the skill should support.
-
-### Step 2: Planning the Reusable Skill Contents
-
-To turn concrete examples into an effective skill, analyze each example by:
-
-1. Considering how to execute on the example from scratch
-2. Identifying what scripts, references, and assets would be helpful when executing these workflows repeatedly
-
-Example: When building a `pdf-editor` skill to handle queries like "Help me rotate this PDF," the analysis shows:
-
-1. Rotating a PDF requires re-writing the same code each time
-2. A `scripts/rotate_pdf.py` script would be helpful to store in the skill
-
-Example: When designing a `frontend-webapp-builder` skill for queries like "Build me a todo app" or "Build me a dashboard to track my steps," the analysis shows:
-
-1. Writing a frontend webapp requires the same boilerplate HTML/React each time
-2. An `assets/hello-world/` template containing the boilerplate HTML/React project files would be helpful to store in the skill
-
-Example: When building a `big-query` skill to handle queries like "How many users have logged in today?" the analysis shows:
-
-1. Querying BigQuery requires re-discovering the table schemas and relationships each time
-2. A `references/schema.md` file documenting the table schemas would be helpful to store in the skill
-
-To establish the skill's contents, analyze each concrete example to create a list of the reusable resources to include: scripts, references, and assets.
-
-### Step 3: Initializing the Skill
-
-At this point, it is time to actually create the skill.
-
-Skip this step only if the skill being developed already exists, and iteration or packaging is needed. In this case, continue to the next step.
-
-When creating a new skill from scratch, always run the `init_skill.py` script. The script conveniently generates a new template skill directory that automatically includes everything a skill requires, making the skill creation process much more efficient and reliable.
-
-Usage:
+`init_skill.py` 스크립트를 실행합니다:
 
 ```bash
 scripts/init_skill.py <skill-name> --path <output-directory> [--resources scripts,references,assets] [--examples]
 ```
 
-Examples:
+### 4단계: 스킬 편집
 
-```bash
-scripts/init_skill.py my-skill --path skills/public
-scripts/init_skill.py my-skill --path skills/public --resources scripts,references
-scripts/init_skill.py my-skill --path skills/public --resources scripts --examples
-```
+(새로 생성되거나 기존의) 스킬을 편집할 때, 스킬이 다른 Codex 인스턴스가 사용하기 위해 만들어진다는 것을 기억하세요.
 
-The script:
+#### SKILL.md 업데이트
 
-- Creates the skill directory at the specified path
-- Generates a SKILL.md template with proper frontmatter and TODO placeholders
-- Optionally creates resource directories based on `--resources`
-- Optionally adds example files when `--examples` is set
+**프론트매터 작성 지침:**
 
-After initialization, customize the SKILL.md and add resources as needed. If you used `--examples`, replace or delete placeholder files.
+- `name`: 스킬 이름
+- `description`: 스킬이 무엇을 하는지와 언제 사용해야 하는지를 모두 포함합니다. 모든 "사용 시기" 정보는 여기에 포함하세요.
 
-### Step 4: Edit the Skill
-
-When editing the (newly-generated or existing) skill, remember that the skill is being created for another instance of Codex to use. Include information that would be beneficial and non-obvious to Codex. Consider what procedural knowledge, domain-specific details, or reusable assets would help another Codex instance execute these tasks more effectively.
-
-#### Learn Proven Design Patterns
-
-Consult these helpful guides based on your skill's needs:
-
-- **Multi-step processes**: See references/workflows.md for sequential workflows and conditional logic
-- **Specific output formats or quality standards**: See references/output-patterns.md for template and example patterns
-
-These files contain established best practices for effective skill design.
-
-#### Start with Reusable Skill Contents
-
-To begin implementation, start with the reusable resources identified above: `scripts/`, `references/`, and `assets/` files. Note that this step may require user input. For example, when implementing a `brand-guidelines` skill, the user may need to provide brand assets or templates to store in `assets/`, or documentation to store in `references/`.
-
-Added scripts must be tested by actually running them to ensure there are no bugs and that the output matches what is expected. If there are many similar scripts, only a representative sample needs to be tested to ensure confidence that they all work while balancing time to completion.
-
-If you used `--examples`, delete any placeholder files that are not needed for the skill. Only create resource directories that are actually required.
-
-#### Update SKILL.md
-
-**Writing Guidelines:** Always use imperative/infinitive form.
-
-##### Frontmatter
-
-Write the YAML frontmatter with `name` and `description`:
-
-- `name`: The skill name
-- `description`: This is the primary triggering mechanism for your skill, and helps Codex understand when to use the skill.
-  - Include both what the Skill does and specific triggers/contexts for when to use it.
-  - Include all "when to use" information here - Not in the body. The body is only loaded after triggering, so "When to Use This Skill" sections in the body are not helpful to Codex.
-  - Example description for a `docx` skill: "Comprehensive document creation, editing, and analysis with support for tracked changes, comments, formatting preservation, and text extraction. Use when Codex needs to work with professional documents (.docx files) for: (1) Creating new documents, (2) Modifying or editing content, (3) Working with tracked changes, (4) Adding comments, or any other document tasks"
-
-Do not include any other fields in YAML frontmatter.
-
-##### Body
-
-Write instructions for using the skill and its bundled resources.
-
-### Step 5: Packaging a Skill
-
-Once development of the skill is complete, it must be packaged into a distributable .skill file that gets shared with the user. The packaging process automatically validates the skill first to ensure it meets all requirements:
+### 5단계: 스킬 패키징
 
 ```bash
 scripts/package_skill.py <path/to/skill-folder>
 ```
 
-Optional output directory specification:
+패키징 스크립트는 다음을 수행합니다:
 
-```bash
-scripts/package_skill.py <path/to/skill-folder> ./dist
-```
+1. **유효성 검사**: YAML 프론트매터 형식, 스킬 명명 규칙, 설명 완성도 등을 자동으로 확인합니다.
+2. **패키징**: 유효성 검사 통과 시 `.skill` 파일을 생성합니다 (예: `my-skill.skill`).
 
-The packaging script will:
+### 6단계: 반복 개선
 
-1. **Validate** the skill automatically, checking:
+실제 사용 후 개선 사항을 구현합니다:
 
-   - YAML frontmatter format and required fields
-   - Skill naming conventions and directory structure
-   - Description completeness and quality
-   - File organization and resource references
-
-2. **Package** the skill if validation passes, creating a .skill file named after the skill (e.g., `my-skill.skill`) that includes all files and maintains the proper directory structure for distribution. The .skill file is a zip file with a .skill extension.
-
-If validation fails, the script will report the errors and exit without creating a package. Fix any validation errors and run the packaging command again.
-
-### Step 6: Iterate
-
-After testing the skill, users may request improvements. Often this happens right after using the skill, with fresh context of how the skill performed.
-
-**Iteration workflow:**
-
-1. Use the skill on real tasks
-2. Notice struggles or inefficiencies
-3. Identify how SKILL.md or bundled resources should be updated
-4. Implement changes and test again
+1. 실제 작업에 스킬 사용하기
+2. 어려움이나 비효율 발견하기
+3. SKILL.md 또는 번들 리소스를 업데이트하는 방법 파악하기
+4. 변경 사항 구현 및 재테스트

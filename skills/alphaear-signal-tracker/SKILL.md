@@ -1,51 +1,49 @@
 ---
 name: alphaear-signal-tracker
-description: Track finance investment signal evolution and update logic based on new finance market information. Use when monitoring finance signals and determining if they are strengthened, weakened, or falsified.
+description: 새로운 금융 시장 정보를 바탕으로 금융 투자 시그널의 변화를 추적하고 논리를 업데이트합니다. 금융 시그널을 모니터링하여 강화/약화/반증 여부를 판단해야 할 때 사용합니다.
 ---
 
-# AlphaEar Signal Tracker Skill
+# AlphaEar 시그널 트래커 스킬
 
-## Overview
+## 개요
 
-This skill provides logic to track and update investment signals. It assesses how new market information impacts existing signals (Strengthened, Weakened, Falsified, or Unchanged).
+투자 시그널을 추적하고 업데이트하는 논리를 제공합니다. 새로운 시장 정보가 기존 시그널에 미치는 영향을 평가합니다 (강화, 약화, 반증, 변화 없음).
 
-## Capabilities
+## 기능
 
-### 1. Track Signal Evolution
+### 1. 시그널 변화 추적 (에이전틱 워크플로우)
 
-### 1. Track Signal Evolution (Agentic Workflow)
+**에이전트(당신)**가 트래커입니다. `references/PROMPTS.md`의 프롬프트를 사용합니다.
 
-**YOU (the Agent)** are the Tracker. Use the prompts in `references/PROMPTS.md`.
+**워크플로우:**
+1.  **조사**: **FinResearcher 프롬프트**를 사용하여 시그널에 대한 사실/가격 정보를 수집합니다.
+2.  **분석**: **FinAnalyst 프롬프트**를 사용하여 초기 `InvestmentSignal`을 생성합니다.
+3.  **추적**: 기존 시그널에 대해 **시그널 추적 프롬프트**를 사용하여 새 정보를 바탕으로 변화(강화/약화/반증)를 평가합니다.
 
-**Workflow:**
-1.  **Research**: Use **FinResearcher Prompt** to gather facts/price for a signal.
-2.  **Analyze**: Use **FinAnalyst Prompt** to generate the initial `InvestmentSignal`.
-3.  **Track**: For existing signals, use **Signal Tracking Prompt** to assess evolution (Strengthened/Weakened/Falsified) based on new info.
+**도구:**
+- 필요한 데이터 수집을 위해 `alphaear-search` 및 `alphaear-stock` 스킬을 사용합니다.
+- JSON 정제가 필요한 경우 `scripts/fin_agent.py`의 `_sanitize_signal_output` 헬퍼를 사용합니다.
 
-**Tools:**
-- Use `alphaear-search` and `alphaear-stock` skills to gather the necessary data.
-- Use `scripts/fin_agent.py` helper `_sanitize_signal_output` if needing to clean JSON.
+**핵심 논리:**
 
-**Key Logic:**
+-   **입력**: 기존 시그널 상태 + 새 정보 (뉴스/가격).
+-   **처리**:
+    1.  새 정보와 시그널 논거를 비교합니다.
+    2.  영향 방향을 결정합니다 (긍정/부정/중립).
+    3.  신뢰도와 강도를 업데이트합니다.
+-   **출력**: 업데이트된 시그널.
 
--   **Input**: Existing Signal State + New Information (News/Price).
--   **Process**:
-    1.  Compare new info with signal thesis.
-    2.  Determine impact direction (Positive/Negative/Neutral).
-    3.  Update confidence and intensity.
--   **Output**: Updated Signal.
-
-**Example Usage (Conceptual):**
+**사용 예시 (개념적):**
 
 ```python
-# This skill is currently a pattern extracted from FinAgent.
-# In a future refactor, it should be a standalone utility class.
-# For now, refer to `scripts/fin_agent.py`'s `track_signal` method implementation.
+# 이 스킬은 현재 FinAgent에서 추출된 패턴입니다.
+# 향후 리팩토링에서 독립적인 유틸리티 클래스로 분리될 예정입니다.
+# 현재는 scripts/fin_agent.py의 track_signal 메서드 구현을 참고하세요.
 ```
 
-## Dependencies
+## 의존성
 
--   `agno` (Agent framework)
--   `sqlite3` (built-in)
+-   `agno` (에이전트 프레임워크)
+-   `sqlite3` (내장)
 
-Ensure `DatabaseManager` is initialized correctly.
+`DatabaseManager`가 올바르게 초기화되어 있어야 합니다.

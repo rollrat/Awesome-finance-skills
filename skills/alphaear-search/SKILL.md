@@ -1,35 +1,34 @@
 ---
 name: alphaear-search
-description: Perform finance web searches and local context searches. Use when the user needs general finance info from the web (Jina/DDG/Baidu) or needs to retrieve finance information from a local document store (RAG).
+description: 금융 웹 검색 및 로컬 컨텍스트 검색을 수행합니다. 사용자가 웹(Jina/DDG/Baidu)에서 일반 금융 정보를 검색하거나 로컬 문서 저장소(RAG)에서 금융 정보를 조회해야 할 때 사용합니다.
 ---
 
-# AlphaEar Search Skill
+# AlphaEar 검색 스킬
 
-## Overview
+## 개요
 
-Unified search capabilities: web search (Jina/DDG/Baidu) and local RAG search.
+웹 검색(Jina/DDG/Baidu)과 로컬 RAG 검색을 통합한 검색 기능을 제공합니다.
 
-## Capabilities
+## 기능
 
-### 1. Web Search
+### 1. 웹 검색
 
-Use `scripts/search_tools.py` via `SearchTools`.
+`scripts/search_tools.py`의 `SearchTools`를 사용합니다.
 
--   **Search**: `search(query, engine, max_results)`
-    -   Engines: `jina`, `ddg`, `baidu`, `local`.
-    -   Returns: JSON string (summary) or List[Dict] (via `search_list`).
--   **Smart Cache (Agentic)**: If you want to avoid redundant searches, use the **Search Cache Relevance Prompt** in `references/PROMPTS.md`. Read the cache first and decide if it's usable.
--   **Aggregate**: `aggregate_search(query)`
-    -   Combines results from multiple engines.
+-   **검색**: `search(query, engine, max_results)`
+    -   엔진: `jina`, `ddg`, `baidu`, `local`.
+    -   반환값: JSON 문자열(요약) 또는 `search_list`를 통한 `List[Dict]`.
+-   **스마트 캐시 (에이전틱)**: 중복 검색을 피하려면 `references/PROMPTS.md`의 **검색 캐시 관련성 프롬프트**를 사용합니다. 캐시를 먼저 읽고 사용 가능 여부를 판단합니다.
+-   **집계 검색**: `aggregate_search(query)`
+    -   여러 엔진의 결과를 통합합니다.
 
+### 2. 로컬 RAG
 
-### 2. Local RAG
+`scripts/hybrid_search.py` 또는 `engine='local'`을 설정한 `SearchTools`를 사용합니다.
 
-Use `scripts/hybrid_search.py` or `SearchTools` with `engine='local'`.
+-   **검색**: 로컬 `daily_news` 데이터베이스를 검색합니다.
 
--   **Search**: Searches local `daily_news` database.
-
-## Dependencies
+## 의존성
 
 -   `duckduckgo-search`, `requests`
--   `scripts/database_manager.py` (search cache & local news)
+-   `scripts/database_manager.py` (검색 캐시 및 로컬 뉴스)

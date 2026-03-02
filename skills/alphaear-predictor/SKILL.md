@@ -1,28 +1,26 @@
 ---
 name: alphaear-predictor
-description: Market prediction skill using Kronos. Use when user needs finance market time-series forecasting or news-aware finance market adjustments.
+description: Kronos 모델을 사용하는 시장 예측 스킬입니다. 사용자가 금융 시장 시계열 예측 또는 뉴스를 반영한 금융 시장 조정이 필요할 때 사용합니다.
 ---
 
-# AlphaEar Predictor Skill
+# AlphaEar 예측기 스킬
 
-## Overview
+## 개요
 
-This skill utilizes the Kronos model (via `KronosPredictorUtility`) to perform time-series forecasting and adjust predictions based on news sentiment.
+Kronos 모델(`KronosPredictorUtility`)을 활용하여 시계열 예측을 수행하고, 뉴스 감성에 기반해 예측값을 조정합니다.
 
-## Capabilities
+## 기능
 
-### 1. Forecast Market Trends
+### 1. 시장 트렌드 예측
 
-### 1. Forecast Market Trends
+**워크플로우:**
+1.  **기본 예측 생성**: `scripts/kronos_predictor.py`의 `KronosPredictorUtility`를 사용하여 기술적/정량적 예측을 생성합니다.
+2.  **예측 조정 (에이전틱)**: `references/PROMPTS.md`의 **예측 조정 프롬프트**를 사용하여 최신 뉴스/논리를 바탕으로 수치를 주관적으로 조정합니다.
 
-**Workflow:**
-1.  **Generate Base Forecast**: Use `scripts/kronos_predictor.py` (via `KronosPredictorUtility`) to generate the technical/quantitative forecast.
-2.  **Adjust Forecast (Agentic)**: Use the **Forecast Adjustment Prompt** in `references/PROMPTS.md` to subjectively adjust the numbers based on latest news/logic.
+**주요 도구:**
+-   `KronosPredictorUtility.get_base_forecast(df, lookback, pred_len, news_text)`: `List[KLinePoint]`를 반환합니다.
 
-**Key Tools:**
--   `KronosPredictorUtility.get_base_forecast(df, lookback, pred_len, news_text)`: Returns `List[KLinePoint]`.
-
-**Example Usage (Python):**
+**사용 예시 (Python):**
 
 ```python
 from scripts.utils.kronos_predictor import KronosPredictorUtility
@@ -31,26 +29,25 @@ from scripts.utils.database_manager import DatabaseManager
 db = DatabaseManager()
 predictor = KronosPredictorUtility()
 
-# Forecast
+# 예측 수행
 forecast = predictor.predict("600519", horizon="7d")
 print(forecast)
 ```
 
+## 설정
 
-## Configuration
+이 스킬은 **Kronos** 모델과 임베딩 모델이 필요합니다.
 
-This skill requires the **Kronos** model and an embedding model.
+1.  **Kronos 모델**:
+    -   프로젝트 루트에 `exports/models` 디렉토리가 있어야 합니다.
+    -   학습된 뉴스 프로젝터 가중치(예: `kronos_news_v1.pt`)를 `exports/models/`에 배치하세요.
+    -   또는 기본 모델에 의존합니다(자동 다운로드).
 
-1.  **Kronos Model**:
-    -   Ensure `exports/models` directory exists in the project root.
-    -   Place trained news projector weights (e.g., `kronos_news_v1.pt`) in `exports/models/`.
-    -   Or depend on the base model (automatically downloaded).
+2.  **환경 변수**:
+    -   `EMBEDDING_MODEL`: 임베딩 모델의 경로 또는 이름 (기본값: `sentence-transformers/all-MiniLM-L6-v2`).
+    -   `KRONOS_MODEL_PATH`: 모델 로딩 경로를 오버라이드할 선택적 경로.
 
-2.  **Environment Variables**:
-    -   `EMBEDDING_MODEL`: Path or name of the embedding model (default: `sentence-transformers/all-MiniLM-L6-v2`).
-    -   `KRONOS_MODEL_PATH`: Optional path to override model loading.
-
-## Dependencies
+## 의존성
 
 -   `torch`
 -   `transformers`
